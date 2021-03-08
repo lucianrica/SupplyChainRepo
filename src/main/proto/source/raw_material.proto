@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package raw_material;
+option java_package = "com.example.raw_material";
+option java_multiple_files = true;
+
+
+// ############# define the material ###################
+message RawMaterial {
+  string id = 1;
+  string name = 2;
+  int32 quantity = 3;
+}
+
+
+// ############# define the messages ###################
+message CreateRawMaterialRequest {
+  RawMaterial raw_material = 1;
+}
+
+message CreateRawMaterialResponse {
+  RawMaterial raw_material = 1;
+}
+
+
+// ############# define the service ###################
+service RawMaterialService {
+
+  // Unary communication
+  rpc CreateRawMaterial(CreateRawMaterialRequest)
+      returns (CreateRawMaterialResponse) {};
+}
