@@ -1,20 +1,18 @@
-package com.example.raw_material.server;
+package com.example.suppliers.server;
 
 import com.example.raw_material.server.RawMaterialServiceImpl;
-import com.example.suppliers.server.SupplyMaterialImpl;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 
-public class RawMaterialServer {
-
+public class SupplyMaterialServer {
     public static void main(String[] args) {
 
 
         // crete the server
-        Server server = ServerBuilder.forPort(9002)
-                .addService(new RawMaterialServiceImpl())
+        Server server = ServerBuilder.forPort(9000)
+                .addService(new SupplyMaterialImpl())
                 .build();
 
 
@@ -44,5 +42,4 @@ public class RawMaterialServer {
 
 
     }
-
 }

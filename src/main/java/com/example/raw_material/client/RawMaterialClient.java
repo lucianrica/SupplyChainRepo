@@ -1,10 +1,8 @@
 package com.example.raw_material.client;
 
 
-import com.example.raw_material.CreateRawMaterialRequest;
-import com.example.raw_material.CreateRawMaterialResponse;
-import com.example.raw_material.RawMaterial;
-import com.example.raw_material.RawMaterialServiceGrpc;
+import com.example.raw_material.*;
+import com.example.supply_material.GetRawMaterialsRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -24,13 +22,16 @@ public class RawMaterialClient {
 
         // a gRPC channel provides a connection to a gRPC server on a specified host and port.
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("localhost", 50051)
+                .forAddress("localhost", 9000)
                 .usePlaintext()
                 .build();
 
 
+
+
         // call the server
         unaryRawMaterialCall(channel);
+        serverStreamRequest(channel);
 
 
         // close connection
@@ -49,9 +50,8 @@ public class RawMaterialClient {
 
         // UNARY
         // create a protocol buffer for the message
-        String uuid = UUID.randomUUID().toString();
         RawMaterial rawMaterial = RawMaterial.newBuilder()
-                .setId(uuid)
+                .setName("iron")
                 .setQuantity(300)
                 .build();
 
@@ -71,6 +71,29 @@ public class RawMaterialClient {
         // Print response
         System.out.println(response.getRawMaterial());
     }
+
+
+    private void serverStreamRequest(ManagedChannel channel) {
+
+
+        // create a greet service client (blocking - synchronous)
+        RawMaterialServiceGrpc.RawMaterialServiceBlockingStub client;
+        client = RawMaterialServiceGrpc.newBlockingStub(channel);
+
+        RawMaterialRequest request = RawMaterialRequest
+                .newBuilder()
+                .build();
+
+
+        client.getRawMaterials(request).forEachRemaining(rawMaterialResponse ->{
+            System.out.println(rawMaterialResponse.getRawMaterial());
+        });
+
+
+
+    }
+
+
 
 
 }
