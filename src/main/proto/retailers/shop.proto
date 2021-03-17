@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package retailers;
+option java_package = "com.example.shop";
+option java_multiple_files = true;
+
+
+// PRODUCT MODEL
+message Product {
+  string productId = 1;
+  string productName = 2;
+  int32 productsInStock = 3;
+  double productPrice = 4;
+}
+
+
+// SERVICE DEFINITION
+service ShopService {
+
+  // GET PRODUCTS, Server streaming
+  rpc GetProducts(GetProductsRequest) returns (stream GetProductsResponse) { };
+  // UPDATE PRODUCTS, BI-DI streaming
+  rpc UpdateProducts(stream UpdateProductsRequest) returns (stream UpdateProductsResponse) {};
+
+
+
+  // GET PRODUCT, Unary communication
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse) {};
+  // UPDATE PRODUCT, Unary communication
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse) {};
+
+}
+
+
+// GET PRODUCTS
+message GetProductsRequest { }
+message GetProductsResponse { Product product = 1; }
+// UPDATE PRODUCTS
+message UpdateProductsRequest { Product product = 1; }
+message UpdateProductsResponse { Product product = 1; }
+
+
+// GET PRODUCT
+message GetProductRequest { Product product = 1; }
+message GetProductResponse { Product product = 1; }
+// UPDATE PRODUCT
+message UpdateProductRequest { Product product = 1; }
+message UpdateProductResponse { Product product = 1; }

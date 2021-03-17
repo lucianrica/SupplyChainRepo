@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package processors;
+option java_package = "com.example.factory";
+option java_multiple_files = true;
+
+
+// PRODUCT MODEL
+message Product {
+  string productId = 1;
+  string productName = 2;
+  int32 productsInStock = 3;
+  int32 productVolume = 4; // Depth × Width × Length
+  double productPrice = 5;
+}
+
+// RAW MATERIAL MODEL
+message RawMaterial {
+  string rawMaterialId = 1;
+  string rawMaterialName = 2;
+  int32 rawMaterialsInStock = 3;
+  int32 rawMaterialsVolume = 4; // Depth × Width × Length
+  double rawMaterialsPrice = 5;
+}
+
+
+// SERVICE DEFINITION
+service FactoryService {
+
+  // UPDATE PRODUCTS, BI-DI streaming
+  rpc UpdateProducts(stream UpdateProductsRequest) returns (stream UpdateProductsResponse) {};
+  // GET PRODUCTS, Server streaming
+  rpc GetProducts(GetProductsRequest) returns (stream GetProductsResponse) { };
+
+
+  // GET PRODUCT, Unary communication
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse) {};
+  // UPDATE PRODUCT, Unary communication
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse) {};
+
+
+
+}
+
+
+// GET PRODUCTS
+message GetProductsRequest { }
+message GetProductsResponse { Product product = 1; }
+// UPDATE PRODUCTS
+message UpdateProductsRequest { Product product = 1; }
+message UpdateProductsResponse { Product product = 1; }
+
+
+// GET PRODUCT
+message GetProductRequest { Product product = 1; }
+message GetProductResponse { Product product = 1; }
+// UPDATE PRODUCT
+message UpdateProductRequest { Product product = 1; }
+message UpdateProductResponse { Product product = 1; }

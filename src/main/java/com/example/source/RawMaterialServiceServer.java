@@ -1,31 +1,33 @@
-package com.example.raw_material.server;
+package com.example.source;
 
-import com.example.raw_material.server.RawMaterialServiceImpl;
-import com.example.suppliers.server.SupplyMaterialImpl;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.IOException;
+import java.net.InetAddress;
 
-public class RawMaterialServer {
+public class RawMaterialServiceServer {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
+        // service registration
+        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+        ServiceInfo serviceInfo = ServiceInfo.create(
+                "_http._tcp.local.",
+                "RawMaterialService",
+                9002,
+                "RawMaterialService");
+
+        jmdns.registerService(serviceInfo);
 
         // crete the server
-        Server server = ServerBuilder.forPort(9002)
+        Server server = ServerBuilder.forPort(serviceInfo.getPort())
                 .addService(new RawMaterialServiceImpl())
                 .build();
 
-
-        // start the server
-        try {
-            server.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Server started on PORT: " + server.getPort());
-
+        server.start();
 
         // listen for the shutdown request
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

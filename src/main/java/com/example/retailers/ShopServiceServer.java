@@ -1,18 +1,31 @@
-package com.example.suppliers.server;
+package com.example.retailers;
 
-import com.example.raw_material.server.RawMaterialServiceImpl;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.IOException;
+import java.net.InetAddress;
 
-public class SupplyMaterialServer {
-    public static void main(String[] args) {
+public class ShopServiceServer {
 
+    public static void main(String[] args) throws IOException {
+
+        // service registration
+        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+        // Exposing a new service using JmDNS
+        ServiceInfo serviceInfo = ServiceInfo.create(
+                "_http._tcp.local.",
+                "ShopService",
+                9000,
+                "ShopService");
+
+        jmdns.registerService(serviceInfo);
 
         // crete the server
-        Server server = ServerBuilder.forPort(9000)
-                .addService(new SupplyMaterialImpl())
+        Server server = ServerBuilder.forPort(serviceInfo.getPort())
+                .addService(new ShopServiceImpl())
                 .build();
 
 

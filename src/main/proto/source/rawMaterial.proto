@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package source;
+option java_package = "com.example.rawMaterial";
+option java_multiple_files = true;
+
+
+// RAW MATERIAL MODEL
+message RawMaterial {
+  string rawMaterialId = 1;
+  string rawMaterialName = 2;
+  int32 rawMaterialsInStock = 3;
+  int32 rawMaterialsVolume = 4; // Depth × Width × Length
+  double rawMaterialsPrice = 5;
+}
+
+
+
+// CREATE RAW MATERIALS
+message CreateItemRequest {
+  RawMaterial rawMaterial = 1;
+}
+
+message CreateItemResponse {
+  string result = 1;
+}
+
+
+
+// GET RAW MATERIALS
+message GetAllItemsRequest {
+  // needs to be empty
+}
+
+message GetAllItemsResponse {
+  RawMaterial rawMaterial = 1;
+}
+
+
+
+// GET RAW MATERIAL BY ID
+message GetItemByIdRequest {
+  string rawMaterialId = 1;
+}
+
+message GetItemByIdResponse {
+  RawMaterial rawMaterial = 1;
+}
+
+
+
+// Update RAW MATERIAL BY ID
+message UpdateItemByIdRequest {
+  RawMaterial rawMaterial = 1;
+}
+
+message UpdateItemByIdResponse {
+  RawMaterial rawMaterial = 1;
+}
+
+
+
+// GET RAW MATERIAL BY ID
+message DeleteItemByIdRequest {
+  string rawMaterialId = 1;
+}
+
+message DeleteItemByIdResponse {
+  string result = 1;
+}
+
+
+
+// SERVICE DEFINITION
+service RawMaterialService {
+
+  // Client streaming communication
+  rpc CreateRawMaterial(stream CreateItemRequest)
+      returns (CreateItemResponse) {};
+
+  // Server streaming
+  rpc GetAllRawMaterials(GetAllItemsRequest)
+      returns (stream GetAllItemsResponse) {};
+
+  // Unary communication
+  rpc GetRawMaterialById(GetItemByIdRequest)
+      returns (GetItemByIdResponse) {};
+
+  // Unary communication
+  rpc UpdateRawMaterialById(UpdateItemByIdRequest)
+      returns (UpdateItemByIdResponse) {};
+
+  // Unary communication
+  rpc DeleteRawMaterialById(DeleteItemByIdRequest)
+      returns (DeleteItemByIdResponse) {};
+}
