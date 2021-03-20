@@ -1,6 +1,7 @@
 package com.example.retailers;
 
 
+import com.example.rawMaterial.*;
 import com.example.shop.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -229,5 +230,4 @@ public class ShopServiceImpl extends ShopServiceGrpc.ShopServiceImplBase {
         }
 
     }
-
 }

@@ -132,6 +132,7 @@ public class RawMaterialServiceImpl extends RawMaterialServiceGrpc.RawMaterialSe
                     .NOT_FOUND
                     .withDescription("Item with id: " + id + " not found")
                     .asRuntimeException());
+            return;
         } else {
             // complete the RPC call (Remote procedure call)
             responseObserver.onCompleted();
