@@ -29,6 +29,7 @@ public class RawMaterialServiceServer {
 
         server.start();
 
+
         // listen for the shutdown request
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Received Shutdown Request...");
@@ -46,5 +47,6 @@ public class RawMaterialServiceServer {
 
 
     }
+
 
 }

@@ -1,0 +1,21 @@
+{
+  "name": "nodejsgrpcservice",
+  "version": "1.0.0",
+  "description": "grpc",
+  "main": "deliveryServiceServer.js",
+  "scripts": {
+    "dev": "node deliveryServiceServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "LN",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.6",
+    "axios": "^0.21.1",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "grpc": "^1.24.6",
+    "nodemon": "^2.0.7",
+    "uuid-random": "^1.3.2"
+  }
+}

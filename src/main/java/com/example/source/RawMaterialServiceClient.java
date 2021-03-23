@@ -27,7 +27,7 @@ public class RawMaterialServiceClient {
 
 
         // call the server
-//        createItem(channel);
+        createItem(channel);
 //        getRawMaterials(channel);
 //        getRawMaterial(channel);
 //        updateRawMaterial(channel);

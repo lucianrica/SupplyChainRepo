@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package deliveryPackage;
+
+
+service DeliveryService {
+    rpc createDelivery (VanRequest) returns (VanResponse) {};
+}
+
+
+message Van {
+    string vanId = 1;
+    int32 drivers = 2;
+    int32 volume = 3;
+    bool delivering  = 4;
+    bool fulfilled  = 5;
+    repeated string itemId = 6;
+}
+
+message VanRequest {
+    Van van = 1;
+}
+
+message VanResponse {
+    repeated Van van = 1;
+}
+
+
+
