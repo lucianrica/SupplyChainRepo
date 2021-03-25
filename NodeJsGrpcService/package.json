@@ -4,7 +4,7 @@
   "description": "grpc",
   "main": "deliveryServiceServer.js",
   "scripts": {
-    "dev": "node deliveryServiceServer.js",
+    "dev": "nodemon deliveryServiceServer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "LN",

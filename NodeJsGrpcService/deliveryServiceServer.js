@@ -1,32 +1,52 @@
-const grpc = require("grpc");
-const protoLoader = require("@grpc/proto-loader");
+const grpc = require('grpc');
 var uuid = require('uuid-random');
-
-const packageDef = protoLoader.loadSync("./protos/delivery.proto", {});
-const grpcObject = grpc.loadPackageDefinition(packageDef);
-const deliveryPackage = grpcObject.deliveryPackage;
+const protoLoader = require('@grpc/proto-loader');
+const PROTO_PATH = __dirname + '/protos/delivery.proto';
 
 
-
-// Create the server 
-const server = new grpc.Server();
-server.bind("0.0.0.0:9003", grpc.ServerCredentials.createInsecure());
-server.addService(deliveryPackage.DeliveryService.service, {
-    "createDelivery": createDelivery
-});
-server.start();
-console.log("Server started on port: 9003")
+const packageDefinition = protoLoader.loadSync(
+    PROTO_PATH,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true
+    });
+var protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
+var grpcDelivery = protoDescriptor.delivery;
+var clients = new Map();
 
 
 
 const scheduledDeliveryList = []
 function createDelivery(call, callback) {
-    console.log(call.request.van)
+    console.log("Recieved request")
+    const van = call.request.van 
+    van.vanId = uuid()
+    tt = JSON.parse(van.itemId)
+    // console.log(tt)
+    // // newArray = tt.split(",")
+    van.itemId = tt
+    // newVan = van
+    // newVan.itemId = tt
+    scheduledDeliveryList.push(van)
+    
+    callback(null, {van: van}); 
 
-    const van = call.request.van
-    scheduledDeliveryList.push(van);
-
-    callback(null, { "van": scheduledDeliveryList });
+    console.log("Sending", {van: van})
 }
 
 
+
+// Create the server 
+const server = new grpc.Server();
+server.addService(grpcDelivery.DeliveryService.service, {
+    createDelivery: createDelivery
+});
+
+server.bind("0.0.0.0:9003",
+    grpc.ServerCredentials.createInsecure());
+server.start();
+
+console.log("Server started on port: 9003")

@@ -8,7 +8,7 @@ const packageDef = protoLoader.loadSync("./protos/delivery.proto", {});
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 // const grpcRawMaterialObject = grpc.loadPackageDefinition(rawMaterialDef);
 
-const deliveryPackage = grpcObject.deliveryPackage;
+const deliveryPackage = grpcObject.delivery;
 // const grpcRawMaterialPackage = grpcRawMaterialObject.source;
 
 
@@ -51,7 +51,7 @@ let van = {
 }
 
 client.createDelivery({
-    "van": van
+    van: van
 
 
 }, (err, res) => {

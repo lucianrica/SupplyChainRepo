@@ -4,6 +4,7 @@ package delivery;
 option java_package = "com.example.delivery";
 option java_multiple_files = true;
 
+
 service DeliveryService {
     rpc createDelivery (VanRequest) returns (VanResponse) {};
 }
@@ -25,6 +26,3 @@ message VanRequest {
 message VanResponse {
     Van van = 1;
 }
-
-
-
