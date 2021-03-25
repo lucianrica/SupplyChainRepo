@@ -3,6 +3,10 @@ package com.example;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 
+import com.example.delivery.DeliveryServiceGrpc;
+import com.example.delivery.Van;
+import com.example.delivery.VanRequest;
+import com.example.delivery.VanResponse;
 import com.example.rawMaterial.*;
 import com.example.shop.*;
 import io.grpc.ManagedChannel;
@@ -10,11 +14,10 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -28,10 +31,9 @@ public class ClientGUIForm extends JFrame {
     private JButton getMaterialsByIdButton1;
     private JButton updateRawMaterialButton;
     private JButton createDelieryButton;
-    private JButton getDeliveryByIdButton;
     private JButton updateProductsButton;
     private JTextField rawMaterialIdTextField;
-    private JTextField textField3;
+    private JTextField requiredDriversTextField;
     private JTextArea deliveryTextArea;
     private JTextArea rawMaterialsTextArea;
     private JProgressBar progressBar1;
@@ -48,6 +50,14 @@ public class ClientGUIForm extends JFrame {
     private JButton createRawMaterialButton;
     private JButton updateButton;
     private JButton addAllButton;
+    private JTextArea deliveryItemsTextArea;
+    private JTextField vanCapacityTextField;
+    private JRadioButton startedRadioButton;
+    private JRadioButton notStartedRadioButton;
+    private JRadioButton fulfilledRadioButton;
+    private String tempItemsList;
+    private boolean deliveryStarted = false;
+    private boolean deliveryFulfilled = false;
 
     ArrayList<Product> productsList = new ArrayList<>();
     ArrayList<RawMaterial> rawMaterialsList = new ArrayList<>();
@@ -57,7 +67,7 @@ public class ClientGUIForm extends JFrame {
         add(rootPanel);
 
         setTitle("Smart Supply Chain App");
-        setSize(1200, 1200);
+        setSize(1600, 1000);
 
         // a gRPC channel provides a connection to a gRPC server on a specified host and port.
         ManagedChannel channel = ManagedChannelBuilder
@@ -68,6 +78,12 @@ public class ClientGUIForm extends JFrame {
         // a gRPC channel provides a connection to a gRPC server on a specified host and port.
         ManagedChannel shopChannel = ManagedChannelBuilder
                 .forAddress("localhost", 9000)
+                .usePlaintext()
+                .build();
+
+        // a gRPC channel provides a connection to a gRPC server on a specified host and port.
+        ManagedChannel deliveryChannel = ManagedChannelBuilder
+                .forAddress("localhost", 9003)
                 .usePlaintext()
                 .build();
 
@@ -476,7 +492,7 @@ public class ClientGUIForm extends JFrame {
             public void keyTyped(KeyEvent e) {
 
                 char kp = e.getKeyChar();
-                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0' ) {
+                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0') {
                     productsInStockJTextField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
                 } else {
                     productsInStockJTextField.setBorder(new LineBorder(Color.RED, 2));
@@ -503,7 +519,7 @@ public class ClientGUIForm extends JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 char kp = e.getKeyChar();
-                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0' ) {
+                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0') {
                     rawMaterialsInStockTextField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
                 } else {
                     rawMaterialsInStockTextField.setBorder(new LineBorder(Color.RED, 2));
@@ -528,11 +544,152 @@ public class ClientGUIForm extends JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 char kp = e.getKeyChar();
-                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0' ) {
+                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0') {
                     rawMaterialsVolumeTextField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
                 } else {
                     rawMaterialsVolumeTextField.setBorder(new LineBorder(Color.RED, 2));
                 }
+            }
+        });
+
+//        addItemsIdComaButton.addActionListener(e -> {
+//            String itemsIds = deliveryItemsTextArea.getText();
+//            String[] arr = itemsIds.split(",");
+//            String body = "[";
+//            int count = 0;
+//
+//            for (String it : arr) {
+//                if (count > 0) {
+//                    body += ",";
+//                }
+//                body += "\"" + it + "\"";
+//                count++;
+//            }
+//            body += "]";
+//
+//            tempItemsList = body;
+//            System.out.println(tempItemsList);
+//        });
+
+        createDelieryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String itemsIds = deliveryItemsTextArea.getText();
+                String[] arr = itemsIds.split(",");
+                String body = "[";
+                int count = 0;
+
+                for (String it : arr) {
+                    if (count > 0) {
+                        body += ",";
+                    }
+                    body += "\"" + it + "\"";
+                    count++;
+                }
+                body += "]";
+
+                tempItemsList = body;
+                System.out.println(tempItemsList);
+
+                // create a greet service client (blocking - synchronous)
+                DeliveryServiceGrpc.DeliveryServiceBlockingStub client;
+                client = DeliveryServiceGrpc.newBlockingStub(deliveryChannel);
+
+                int requiredDrivers = 0;
+                boolean deliveringStarting = false;
+                boolean deliveringFulfilled = false;
+                int vanCapacity = 200;
+
+                if (requiredDriversTextField.getText().length() > 0) {
+                    requiredDrivers = Integer.parseInt(requiredDriversTextField.getText());
+                }
+
+                if (vanCapacityTextField.getText().length() > 0) {
+                    vanCapacity = Integer.parseInt(vanCapacityTextField.getText());
+                }
+
+
+                // create a protocol buffer
+                Van loadedVan = Van.newBuilder()
+                        .setDelivering(deliveryStarted)
+                        .setDrivers(requiredDrivers)
+                        .setFulfilled(deliveryFulfilled)
+                        .setItemId(tempItemsList)
+                        .setVolume(vanCapacity)
+                        .build();
+
+
+                VanRequest request = VanRequest.newBuilder()
+                        .setVan(loadedVan)
+                        .build();
+
+
+                client.createDelivery(request);
+
+                try {
+                    deliveryTextArea.setText("");
+                    // call the RPC and get back a GreetResponse (protocol buffers)
+                    VanResponse response = client.createDelivery(request);
+
+                    // Print response
+                    String x = deliveryTextArea.getText();
+                    String y = x + "\n" + response.getVan().toString();
+                    deliveryTextArea.setText(y);
+
+                } catch (Exception err) {
+                    System.out.println(err);
+                }
+            }
+        });
+        requiredDriversTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char kp = e.getKeyChar();
+                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0') {
+                    requiredDriversTextField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+                } else {
+                    requiredDriversTextField.setBorder(new LineBorder(Color.RED, 2));
+                }
+            }
+        });
+        vanCapacityTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char kp = e.getKeyChar();
+                if (kp == '1' || kp == '2' || kp == '3' || kp == '4' || kp == '5' || kp == '6' || kp == '7' || kp == '8' || kp == '9' || kp == '0') {
+                    vanCapacityTextField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+                } else {
+                    vanCapacityTextField.setBorder(new LineBorder(Color.RED, 2));
+                }
+            }
+        });
+
+        notStartedRadioButton.setSelected(true);
+
+        notStartedRadioButton.addItemListener(e -> {
+            if (e.getStateChange() == 1) {
+                deliveryStarted = false;
+                startedRadioButton.setSelected(false);
+                fulfilledRadioButton.setSelected(false);
+            }
+        });
+
+        startedRadioButton.addItemListener(e -> {
+            if (e.getStateChange() == 1) {
+                deliveryStarted = true;
+                notStartedRadioButton.setSelected(false);
+                fulfilledRadioButton.setSelected(false);
+
+            }
+        });
+
+        fulfilledRadioButton.addItemListener(e -> {
+            if (e.getStateChange() == 1) {
+                deliveryFulfilled = true;
+                notStartedRadioButton.setSelected(false);
+                startedRadioButton.setSelected(false);
+
             }
         });
     }
