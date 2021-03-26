@@ -73,7 +73,7 @@ fabric.properties
 
 # From https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle
-/build/
+
 
 # Ignore Gradle GUI config
 gradle-app.setting
